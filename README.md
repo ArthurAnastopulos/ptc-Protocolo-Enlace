@@ -1,7 +1,36 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=9187760&assignment_repo_type=AssignmentRepo)
-# Projeto2_enlace
-Um protocolo de enlace ponto-a-ponto
+<h1 align='center'>Projeto 2 - Protocolo de enlace</h1>
+<p align="center">Projeto de desenvolvimento de um protocolo de enlace ponto-a-ponto</p>
 
-Use este repositório para o desenvolvimento do seu protocolo de enlace !
+Tabela de conteúdos
+=================
+<!--ts-->
+   * [Protocolo de Enlace](#Protocolo-de-Enlace)
+   * [Objetivos](#Objetivos)
+   * [Pré-requisitos](#Pré-requisitos)
+   * [Instruções para Uso](#Instruções-para-Uso)
+   * [Máquina de Estado Finita do Protocolo](#Máquina-de-Estado-Finita-do-Protocolo)
+   * [Autores](#Autores)
 
-O projeto será realizado em equipes de até 3 alunos, e usando o Github Classroom. Aqui usaremos a funcionalidade Issues para discutir dúvidas específicas de cada equipe. 
+## Protocolo de Enlace
+
+## Objetivos
+
+## Pré-requisitos
+
+## Instruções para Uso
+
+## Máquina de Estado Finita do Protocolo
+
+## Autores
+
+<a href="https://github.com/ArthurAnastopulos">
+    <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/51097061?v=4" width="100px;" alt=""/><br />
+    <sub><b>Arthur Anastopulos dos Santos</b></sub></a><br />
+
+<a href="https://github.com/alanamandim">
+    <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/58298192?v=4" width="100px;" alt=""/><br />
+    <sub><b>Alana Mandim</b></sub></a><br />
+
+<a href="https://github.com/jeffersonbcr">
+    <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/58866006?v=4" width="100px;" alt=""/><br />
+    <sub><b>Jefferson Botitano</b></sub></a>
