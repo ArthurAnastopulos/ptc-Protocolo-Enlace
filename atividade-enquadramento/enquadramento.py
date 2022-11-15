@@ -10,7 +10,8 @@ class Enquadramento(poller.Callback):
     def __init__(self, port, timeout):
         self.__port = port
         self.__timeout = timeout
-        self.__serial = Serial(self.__port, 9600, self.__timeout)
+        self.__tout = timeout
+        self.__serial = Serial(self.__port, 9600,self.__timeout)
         poller.Callback.__init__(self, self.__serial, self.__tout)
         self.__buffer = bytearray()
         
