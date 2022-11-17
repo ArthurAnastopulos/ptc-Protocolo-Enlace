@@ -7,11 +7,11 @@ from serial import Serial
 
 class Enquadramento(poller.Callback):
  
-    def __init__(self, port, timeout):
+    def __init__(self, port, tout):
+        print('__init__')
         self.__port = port
-        self.__timeout = timeout
-        self.__tout = timeout
-        self.__serial = Serial(self.__port, 9600,self.__timeout)
+        self.__tout = tout
+        self.__serial = Serial(self.__port, 9600, timeout=None )
         poller.Callback.__init__(self, self.__serial, self.__tout)
         self.__buffer = bytearray()
         
@@ -24,42 +24,48 @@ class Enquadramento(poller.Callback):
 
       
     def ocioso(self, msg):
+        print("ocioso: ", msg)
         if(msg == b'\x7E'):
             self.enable_timeout()
             self.__state = self.prep
 
     def prep(self, msg):
+        print("prep:", msg)
         if(msg == b'\x7D'):
             self.__state = self.esc
         if(msg != b'\x7E'):
-            self.__buffer.append(msg)
+            self.__buffer += msg
             self.__state = self.rx
 
     def esc(self, msg):
+        print('esc:', msg)
         if(msg == b'\x7E' or msg == b'\x7D'):
             self.__buffer.clear()
             self.__state = self.ocioso
+            self.disable_timeout()
         else:
-            self.__buffer.append(msg^0x20)
+            self.__buffer += bytes([msg[0] ^ 0x20])
             self.__state = self.rx    
 
     def rx(self, msg):
+        print('rx:', msg)
         if(msg == b'\x7D'):
             self.__state = self.esc
-
         if(msg == b'\x7E'):
             self.__state = self.ocioso
+            self.disable_timeout()
             return True
         else:
-            self.__buffer.append(msg)
+            self.__buffer += msg
         
 
     def handle(self):
-        recvMsg = self._serial.read(1)
+        print('handle')
+        recvMsg = self.__serial.read(1)
         if self.__state(recvMsg):
             print("Frame Msg: ", self.__buffer)
 
-    def timeout(self):
+    def handle_timeout(self):
         print('Timeout')
         self.__state = self.ocioso
         self.disable_timeout()
