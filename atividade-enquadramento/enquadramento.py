@@ -3,30 +3,32 @@
 from pypoller import poller
 from socket import *
 from serial import Serial
+from subcamada import Subcamada
 
+## class Enquadramento(poller.Callback):
+class Enquadramento(Subcamada): 
 
-class Enquadramento(poller.Callback):
- 
     def __init__(self, port, tout):
         print('__init__')
         self.__port = port
         self.__tout = tout
         self.__serial = Serial(self.__port, 9600, timeout=None )
-        poller.Callback.__init__(self, self.__serial, self.__tout)
+        Subcamada.__init__(self, self.__serial, self.__tout)
+        ##poller.Callback.__init__(self, self.__serial, self.__tout)
         self.__buffer = bytearray()
         
-        self.enable()
-        self.disable_timeout()
-        sched = poller.Poller()
+        ##self.enable()
+        ##self.disable_timeout()
+        ##sched = poller.Poller()
         self.__state = self.ocioso
-        sched.adiciona(self)
-        sched.despache()
+        ##sched.adiciona(self)
+        ##sched.despache()
 
       
     def ocioso(self, msg):
         print("ocioso: ", msg)
         if(msg == b'\x7E'):
-            self.enable_timeout()
+            ##self.enable_timeout()
             self.__state = self.prep
 
     def prep(self, msg):
@@ -42,7 +44,7 @@ class Enquadramento(poller.Callback):
         if(msg == b'\x7E' or msg == b'\x7D'):
             self.__buffer.clear()
             self.__state = self.ocioso
-            self.disable_timeout()
+            ##self.disable_timeout()
         else:
             self.__buffer += bytes([msg[0] ^ 0x20])
             self.__state = self.rx    
@@ -53,7 +55,7 @@ class Enquadramento(poller.Callback):
             self.__state = self.esc
         if(msg == b'\x7E'):
             self.__state = self.ocioso
-            self.disable_timeout()
+            ##self.disable_timeout()
             return True
         else:
             self.__buffer += msg
@@ -68,4 +70,4 @@ class Enquadramento(poller.Callback):
     def handle_timeout(self):
         print('Timeout')
         self.__state = self.ocioso
-        self.disable_timeout()
+        ##self.disable_timeout()
