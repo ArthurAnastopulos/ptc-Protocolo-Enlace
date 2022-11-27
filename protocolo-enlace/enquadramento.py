@@ -56,6 +56,13 @@ class Enquadramento(Subcamada):
         if(msg == b'\x7E'):
             self.__state = self.ocioso
             ##self.disable_timeout()
+            # cria objeto crc16 e verifica crc16
+            fcs = crc.CRC16(self.__buffer)            
+            if fcs.check_crc(): 
+                # quadro = ?
+                # envia quadro e limpar buffer ?
+                self.superior.recebe(quadro)
+                self.__buffer.clear()                 
             return True
         else:
             self.__buffer += msg
@@ -71,3 +78,15 @@ class Enquadramento(Subcamada):
         print('Timeout')
         self.__state = self.ocioso
         ##self.disable_timeout()
+    
+    def envia(self,quadro):
+        # cria byte array e ?
+        dados = bytearray()
+
+        # escreve na porta serial
+        self.__serial.write(dados) 
+    
+    def recebe(self):
+        # Receber byte para enquatramento ?
+        dado = self.__serial.read(1)
+        

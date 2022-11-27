@@ -1,23 +1,24 @@
 from enquadramento import Enquadramento
-from callback import Callback
+from pypoller import poller
 
-class Subcamada(Callback):
+class Subcamada(poller.Callback):
     def __init__(self, serial, tout):
         self.__serial = serial
         self.__tout = tout
-        Callback.__init__(self, self.__serial, self.__tout)
+        poller.Callback.__init__(self, self.__serial, self.__tout)
         self.inferior = None
         self.superior = None
 
-    def envia(self, subcamada):
-        print('envia')
-        self.superior.envia(subcamada)
+    def envia(self, quadro):
+        self.superior.envia(quadro)
 
-    def recebe(self, subcamada):
-        print('recebe')
-        self.superior.recebe(subcamada)
+    def recebe(self, quadro):
+        self.inferior.recebe(quadro)
 
-    def conecta(self, lower):
-        print('connect')
-        self.inferior = lower
-        lower.superior = self
+
+    def conecta(self, superior):
+        self.superior = superior
+        superior.inferior = self
+
+        
+        
