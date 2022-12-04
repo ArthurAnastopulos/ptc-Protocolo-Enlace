@@ -2,30 +2,22 @@
 from subcamada import Subcamada
 from enquadramento import Enquadramento
 from pypoller import poller
+from aplicacao import Aplicacao
 
 class Protocolo(Subcamada):
-    def __init__(self):
-        Subcamada.__init__(self, self.__serial, self.__tout)
+    def __init__(self, serial, tout):
+        self.__serial = serial
+        self.__tout = tout
+        self.__enq = Enquadramento.__init__(port=self.__serial, tout=self.__tout)
+        self.__app = Aplicacao.__init__()
 
-    def envio(self, dados):
-        
-        self.superior.envia(dados)
+        #Conectar as subcamadas
 
-        sched = poller.Poller
-        sched.adiciona(self)
-        sched.despache()
+        # cria o Poller e registra os callbacks
+        self.__sched = poller.Poller()
+        self.__sched.adiciona(self.__enq)
+        self.__sched.adiciona(self.__app)
 
-    def recebe(self,dados):
-        #mostrar dados que foram recebidos da subcamada inferior
-        print('Recebido:', dados)
-
-        sched = poller.Poller
-        sched.adiciona(self)
-        sched.despache()
-
-    def handle(self,dado):
-        self.sequencia = not self.sequencia
-
-        quadro = Enquadramento()      
-        self.inferior.envia(quadro)
-    
+    def iniciar(self):
+        self.__app.iniciar()
+        self.__sched.despache()
