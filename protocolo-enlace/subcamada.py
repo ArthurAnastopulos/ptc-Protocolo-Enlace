@@ -1,4 +1,4 @@
-from enquadramento import Enquadramento
+from quadro import Quadro
 from pypoller import poller
 
 class Subcamada(poller.Callback):
@@ -8,7 +8,7 @@ class Subcamada(poller.Callback):
         self.superior = None
 
     def envia(self, quadro):
-        self.superior.envia(quadro)
+        self.inferior.envia(quadro)
 
     def recebe(self, quadro):
         self.inferior.recebe(quadro)

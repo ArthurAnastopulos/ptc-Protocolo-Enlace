@@ -4,7 +4,8 @@ from pypoller import poller
 from socket import *
 from serial import Serial
 from subcamada import Subcamada
-
+from quadro import Quadro
+from crc import CRC16
 ## class Enquadramento(poller.Callback):
 class Enquadramento(Subcamada): 
 
@@ -55,38 +56,49 @@ class Enquadramento(Subcamada):
             self.__state = self.esc
         if(msg == b'\x7E'):
             self.__state = self.ocioso
-            ##self.disable_timeout()
-            # cria objeto crc16 e verifica crc16
-            fcs = crc.CRC16(self.__buffer)            
-            if fcs.check_crc(): 
-                # quadro = ?
-                # envia quadro e limpar buffer ?
-                self.superior.recebe(quadro)
-                self.__buffer.clear()                 
-            return True
+            ##self.disable_timeout() 
+            fcs = CRC16(self.__buffer)
+            if fcs.check_crc():
+                quadro = self.deserializeBuffer(self.__buffer)
+                self.superior.recebe(quadro) #recebe da Subcamada, não do enquadramento (Talvez mudar de nome, para não gerar confusão?)
+                self.__buffer.clear()       
+                return True
+            return False    
         else:
             self.__buffer += msg
         
 
     def handle(self):
-        print('handle')
-        recvMsg = self.__serial.read(1)
-        if self.__state(recvMsg):
-            print("Frame Msg: ", self.__buffer)
+        print('handle(Enquadramento)')
+        self.recebe()
 
     def handle_timeout(self):
-        print('Timeout')
+        print('handle_timeout(Enquadramento)')
         self.__state = self.ocioso
+        self.__buffer.clear()
         ##self.disable_timeout()
     
     def envia(self,quadro):
-        # cria byte array e ?
         dados = bytearray()
-
-        # escreve na porta serial
+        dados.append( b'\x7E' )
+        dados += quadro.serialize()
+        dados.appen( b'\x7E' )
         self.__serial.write(dados) 
     
     def recebe(self):
-        # Receber byte para enquatramento ?
-        dado = self.__serial.read(1)
+        recvMsg = self.__serial.read(1)
+        if self.__state(recvMsg):
+            print("Frame Msg: ", self.__buffer)
         
+    def deserializeBuffer(self, buff: bytearray):
+        tipoQuadro = (buff[0] & (1 << 7) ) >> 7
+        numSequencia = (buff[0] & (1 << 3) ) >> 3
+        if tipoQuadro == 0: #Se for 0, é Data
+            idProto = buff[2]
+            data = buff[3:len(buff)-2]
+            return Quadro(tipoQuadro = tipoQuadro, numSequencia = numSequencia, idProto = idProto, data = data)
+            #fcs é preparado no serialize do Quadro, assim não é necessario aqui
+        else: # Se for 1, é ACK
+            data[2:len(buff)-2]
+            return Quadro(tipoQuadro = tipoQuadro, numSequencia = numSequencia, data = data)
+           
