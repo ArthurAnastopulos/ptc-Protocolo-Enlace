@@ -91,14 +91,8 @@ class Enquadramento(Subcamada):
             print("Frame Msg: ", self.__buffer)
         
     def deserializeBuffer(self, buff: bytearray):
-        tipoQuadro = (buff[0] & (1 << 7) ) >> 7
+        tipoMsgArq = (buff[0] & (1 << 7) ) >> 7
         numSequencia = (buff[0] & (1 << 3) ) >> 3
-        if tipoQuadro == 0: #Se for 0, é Data
-            idProto = buff[2]
-            data = buff[3:len(buff)-2]
-            return Quadro(tipoQuadro = tipoQuadro, numSequencia = numSequencia, idProto = idProto, data = data)
-            #fcs é preparado no serialize do Quadro, assim não é necessario aqui
-        else: # Se for 1, é ACK
-            data[2:len(buff)-2]
-            return Quadro(tipoQuadro = tipoQuadro, numSequencia = numSequencia, data = data)
-           
+        idProto = buff[2]
+        data = buff[3:len(buff)-2]
+        return Quadro(tipoMsgArq = tipoMsgArq, numSequencia = numSequencia, idProto = idProto, data = data)

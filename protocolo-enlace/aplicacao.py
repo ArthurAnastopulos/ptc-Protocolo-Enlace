@@ -19,16 +19,16 @@ class Aplicacao(Subcamada): #Adaptacao
             self.parar()
         #continuar handle aplicação
         self.__sequencia = not self.__sequencia
-        quadro = Quadro(tipoQuadro = 0, numSequencia = self.__sequencia, data = dados)
+        quadro = Quadro(tipoMsgArq = 0, numSequencia = self.__sequencia, data = dados)
         print("Enviado: ", quadro.getData())
         self.inferior.envia(quadro)
 
     def iniciar(self):
         print("iniciar (Aplicacao)")
-        inicio = Quadro(tipoQuadro = 0, numSequencia = self.__sequencia, data = "start")
+        inicio = Quadro(numSequencia = self.__sequencia, data = "start")
         self.inferior.envia(inicio)
 
     def parar(self):
         print("parar (Aplicacao)")
-        stop = Quadro(tipoQuadro = 0, numSequencia = 0, data = "stop")
+        stop = Quadro(numSequencia = 0, data = "stop")
         self.inferior.envia(stop)
