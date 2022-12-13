@@ -14,26 +14,31 @@ class Arquitetura(Subcamada):
         self.__quadro = None
         self.__filaMsg = Queue() # Fila de Mensagens
 
-    def recebe(self, quadro):
+    def recebe(self, quadro : Quadro):
         print("recebe (Arquitetura)")
         self.__quadro = quadro
-        print("Data do Quadro: ", self.__quadro.data)
+        print("RECEBE timeout habilitado ? : ",self.timeout_enabled)
+        print("Data do Quadro: ", self.__quadro.getData())
         print("Estado da Arquitetura durante recibimento: ", self.__state)
         self.__state(self.__quadro)
+        if(quadro.__tipoMsgArq == 0) :
+            self.__sequenciaM = not self.__sequenciaM
 
-    def envia(self, quadro):
+    def envia(self, quadro : Quadro):
         print("envia (Arquitetura)")
         print("Estado da Arquitetura durante envio: ", self.__state)
+        print("ENVIA timeout habilitado ? : ",self.timeout_enabled)
         self.__quadro = quadro
         self.__filaMsg.put(self.__quadro)
 
-        if self.__quadro.data == "reset":
+        if self.__quadro.getData() == "reset":
             self.__state = self.ocioso ##Muda para estado ocioso
             self.__quadro = None #limpa o atributo quadro da arquitetura
         if self.__state == self.ocioso:
             if self.__filaMsg.qsize() > 1:
                 self.inferior.envia(self.__filaMsg.get()) # !dataN da Modelagem da MEF
-            self.inferior.envia(self.__filaMsgg.get())
+                self.__sequenciaN = not self.__sequenciaN
+            self.inferior.envia(self.__filaMsg.get())
             self.__state = self.espera
 
     # 0 - recebe (M)
@@ -66,7 +71,7 @@ class Arquitetura(Subcamada):
         print("espera (Arquitetura)")
 
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia == self.__sequenciaM):
-            print("--- Data M---")
+            print("--- Data M --- Return ackM ---")
             ack = Quadro(tipoMsgArq = 1, numSequencia = quadro.getNumSequencia)
             self.inferior.envia(ack)
             self.superior.recebe(quadro)
@@ -74,22 +79,22 @@ class Arquitetura(Subcamada):
             #self__state = self.espera
 
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia != self.__sequenciaM):
-            print(" ----- ")
+            print("--- Data_M --- Return ack_M ---")
             ack = Quadro(tipoMsgArq = 1, numSequencia = self.__sequenciaM)
             self.inferior.envia(ack)
 
         if (quadro.getTipoMsgArq == 1) and (quadro.getNumSequencia != self.__sequenciaN):
-            print(" ----- ")
+            print(" ----- ack_N ----- Retransmitido")
             self.__quadro.setNumSequencia(numSequencia = self.__quadro.getNumSequencia)
         self.inferior.envia(self.__quadro)
         
         if (quadro.getTipoMsgArq == 1) and (quadro.getNumSequencia == self.__sequenciaN):
-            print(" ---- ")
+            print(" ----- ack N ----- ")
             self.__sequenciaN = not self.__sequenciaN
             self.__state = self.ocioso
 
         if tout:
-            print("retransmite")
+            print("----- retransmite -----")
             self.inferior.envia(self.__quadro)
             self.disable_timeout()
 
