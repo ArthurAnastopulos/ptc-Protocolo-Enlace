@@ -15,7 +15,7 @@ class Aplicacao(Subcamada): #Adaptacao
     def handle(self):
         print("handle (Aplicacao)")
         dados = sys.stdin.readline()
-        if dados == "stop":
+        if dados.strip() == "stop":
             self.parar()
         #continuar handle aplicação
         self.__sequencia = not self.__sequencia
@@ -29,6 +29,7 @@ class Aplicacao(Subcamada): #Adaptacao
         self.inferior.envia(inicio)
 
     def parar(self):
-        print("parar (Aplicacao)")
-        stop = Quadro(numSequencia = 0, data = "stop")
-        self.inferior.envia(stop)
+        print("parar (Aplicacao) - Encerrando Aplicação")
+        # stop = Quadro(numSequencia = 0, data = "stop")
+        # self.inferior.envia(stop)
+        sys.exit()

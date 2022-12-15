@@ -34,10 +34,6 @@ class Arquitetura(Subcamada):
         self.__quadro = quadro
         self.__filaMsg.put(self.__quadro)
 
-        if self.__quadro.getData() == "reset":
-            print("reset (Arquitetura)")
-            self.__state = self.ocioso ##Muda para estado ocioso
-            self.__quadro = None #limpa o atributo quadro da arquitetura
         if self.__state == self.ocioso:
             print("Arquitetura envia ocioso")
             if self.__filaMsg.qsize() > 1:
@@ -59,6 +55,7 @@ class Arquitetura(Subcamada):
             ack = Quadro.__init__(tipoMsgArq = 1, numSequencia = quadro.getNumSequencia)
             self.inferior.envia(ack)
             self.superior.recebe(quadro)
+            self.__quadro = None
             self.__state = self.ocioso
 
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia != self.__sequenciaM):
@@ -84,6 +81,7 @@ class Arquitetura(Subcamada):
             ack = Quadro(tipoMsgArq = 1, numSequencia = quadro.getNumSequencia)
             self.inferior.envia(ack)
             self.superior.recebe(quadro)
+            self.__quadro = None
             self.__sequenciaM = not self.__sequenciaM
             self.__state = self.espera
 
@@ -97,6 +95,7 @@ class Arquitetura(Subcamada):
             print(" ----- ack_N ----- Retransmitido")
             self.__quadro.setNumSequencia(numSequencia = not self.__quadro.getNumSequencia)
             self.inferior.envia(self.__quadro)
+            self.__quadro = None
             self.__state = self.espera
         
         if (quadro.getTipoMsgArq == 1) and (quadro.getNumSequencia == self.__sequenciaN):
@@ -107,7 +106,6 @@ class Arquitetura(Subcamada):
         if tout:
             print("----- retransmite -----")
             self.inferior.envia(self.__quadro)
-            self.disable_timeout()
 
     def handle(self):
         print("handle (Arquitetura)")

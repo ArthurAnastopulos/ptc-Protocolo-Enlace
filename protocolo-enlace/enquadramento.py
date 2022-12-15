@@ -89,7 +89,8 @@ class Enquadramento(Subcamada):
         dados += quadro.serialize()
         dados += b'\x7E'
         print("Enq Envia Dados: ", dados)
-        self.__serial.write(dados) 
+        self.__serial.write(dados)
+        self.__buffer.clear()
     
     def recebe(self):
         print("Enquadramento (recebe)")
