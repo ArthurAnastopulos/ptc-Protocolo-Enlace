@@ -4,14 +4,16 @@ from enquadramento import Enquadramento
 from pypoller import poller
 from aplicacao import Aplicacao
 from arquitetura import Arquitetura
+import sys
 
 class Protocolo(Subcamada):
     def __init__(self, serial, tout):
+        print("Protocolo (__init__)")
         self.__serial = serial
         self.__tout = tout
-        self.__enq = Enquadramento.__init__(port=self.__serial, tout=self.__tout)
-        self.__app = Aplicacao.__init__()
-        self.__arq = Arquitetura.__init__(tout=self.__tout)
+        self.__enq = Enquadramento(port=self.__serial, tout=self.__tout)
+        self.__app = Aplicacao()
+        self.__arq = Arquitetura(tout=self.__tout)
         
         #Conectar as subcamadas
         self.__enq.conecta(self.__arq);
@@ -24,5 +26,7 @@ class Protocolo(Subcamada):
         self.__sched.adiciona(self.__arq)
 
     def iniciar(self):
+        print("Protocolo (Despache)")
         self.__app.iniciar()
         self.__sched.despache()
+        

@@ -7,7 +7,7 @@ class Arquitetura(Subcamada):
     def __init__(self, tout):
         print("__init__ (Arquitetura)")
         self.__tout = tout
-        Subcamada.__init__(self, self.__tout)
+        Subcamada.__init__(self, None, self.__tout)
         self.__sequenciaM = 0
         self.__sequenciaN = 0
         self.__state = self.ocioso
@@ -19,9 +19,12 @@ class Arquitetura(Subcamada):
         self.__quadro = quadro
         print("RECEBE timeout habilitado ? : ",self.timeout_enabled)
         print("Data do Quadro: ", self.__quadro.getData())
+        print("Tipo do Quadro: ", self.__quadro.getTipoQuadro())
+        print("NumSequencia: ", self.__quadro.getNumSequencia())
+        print("TipoMsgArq: ", self.__quadro.getTipoMsgArq())
         print("Estado da Arquitetura durante recibimento: ", self.__state)
         self.__state(self.__quadro)
-        if(quadro.__tipoMsgArq == 0) :
+        if(quadro.getTipoMsgArq() == 0) :
             self.__sequenciaM = not self.__sequenciaM
 
     def envia(self, quadro : Quadro):
@@ -32,9 +35,11 @@ class Arquitetura(Subcamada):
         self.__filaMsg.put(self.__quadro)
 
         if self.__quadro.getData() == "reset":
+            print("reset (Arquitetura)")
             self.__state = self.ocioso ##Muda para estado ocioso
             self.__quadro = None #limpa o atributo quadro da arquitetura
         if self.__state == self.ocioso:
+            print("Arquitetura envia ocioso")
             if self.__filaMsg.qsize() > 1:
                 self.inferior.envia(self.__filaMsg.get()) # !dataN da Modelagem da MEF
                 self.__sequenciaN = not self.__sequenciaN
@@ -48,13 +53,13 @@ class Arquitetura(Subcamada):
         self.disable_timeout()
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia == self.__sequenciaM):
             print("--- Data M Recebido ---")
-            print("NumSequencia: ", quadro.getNumSequencia )
+            print("NumSequencia: ", quadro.getNumSequencia, " Sequencia Correta: ", self.__sequenciaM )
             print("TipoMsgArq: ", quadro.getTipoMsgArq)
 
             ack = Quadro.__init__(tipoMsgArq = 1, numSequencia = quadro.getNumSequencia)
             self.inferior.envia(ack)
             self.superior.recebe(quadro)
-            #self.__state = self.ocioso
+            self.__state = self.ocioso
 
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia != self.__sequenciaM):
             print("--- Data _M Recebido ---")
@@ -64,11 +69,15 @@ class Arquitetura(Subcamada):
 
             ack = Quadro.__init__(tipoMsgArq = 1, numSequencia = quadro.getNumSequencia)
             self.inferior.envia(ack)
-            #self__state = self.ocioso
+            self.__state = self.ocioso
 
 
     def espera(self, quadro :  Quadro, tout : bool = False):
         print("espera (Arquitetura)")
+        if(not self.timeout_enabled):
+            print("Caso não tenho")
+            self.reload_timeout()
+            self.enable_timeout()
 
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia == self.__sequenciaM):
             print("--- Data M --- Return ackM ---")
@@ -76,17 +85,19 @@ class Arquitetura(Subcamada):
             self.inferior.envia(ack)
             self.superior.recebe(quadro)
             self.__sequenciaM = not self.__sequenciaM
-            #self__state = self.espera
+            self.__state = self.espera
 
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia != self.__sequenciaM):
             print("--- Data_M --- Return ack_M ---")
             ack = Quadro(tipoMsgArq = 1, numSequencia = self.__sequenciaM)
             self.inferior.envia(ack)
+            self.__state = self.espera
 
         if (quadro.getTipoMsgArq == 1) and (quadro.getNumSequencia != self.__sequenciaN):
             print(" ----- ack_N ----- Retransmitido")
-            self.__quadro.setNumSequencia(numSequencia = self.__quadro.getNumSequencia)
-        self.inferior.envia(self.__quadro)
+            self.__quadro.setNumSequencia(numSequencia = not self.__quadro.getNumSequencia)
+            self.inferior.envia(self.__quadro)
+            self.__state = self.espera
         
         if (quadro.getTipoMsgArq == 1) and (quadro.getNumSequencia == self.__sequenciaN):
             print(" ----- ack N ----- ")

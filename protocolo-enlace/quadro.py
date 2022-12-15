@@ -17,10 +17,12 @@ class Quadro():
         if kwargs is not None:
             if 'tipoMsgArq' in kwargs:
                 self.__tipoMsgArq = kwargs['tipoMsgArq']
+            else:
+                self.__tipoMsgArq = 0
             if 'tipoQuadro' in kwargs:
                 self.__tipoQuadro = kwargs['tipoQuadro']
-            else: #Se não Controle gerar Exceção !!Este caso nunca é para acontecer
-               raise Exception("Está faltando o bit do tipo de Quadro(ACK ou DATA)")
+            else:
+               self.__tipoQuadro = 0
             if 'numSequencia' in kwargs:
                 self.__numSequencia = kwargs['numSequencia']
             else:
@@ -28,15 +30,14 @@ class Quadro():
             if 'idProto' in kwargs:
                 self.__idProto = kwargs['idProto']
             else:
-                raise Exception("Está faltando idProto") #Vem da Adaptação
+               self.__idProto = 1
             if 'data' in kwargs:
                 self.__data = kwargs['data']
             else:
                 self.__data = ""
-            if 'FCS' in kwargs:
+            if 'fcs' in kwargs:
                 self.__fsc = kwargs['fcs']   
 
-    @staticmethod
     def deserialize(self, buffer: bytes):
         pass 
     
@@ -46,7 +47,6 @@ class Quadro():
         # Verificar os 7 bits do Controle, colocando os valores definidos
         self.__controle |= ( self.__tipoMsgArq << 7 )
         self.__controle |= ( self.__numSequencia << 3 )
-
 
         if self.__tipoQuadro == 0:
             self.__controle |= (0 << 1)
@@ -58,6 +58,10 @@ class Quadro():
         
         if self.__tipoQuadro == 2:
             self.__controle |= (1 << 1)
+            self.__controle |= (0 << 0)
+
+        if self.__tipoQuadro == 3:
+            self.__controle |= (1 << 1)
             self.__controle |= (1 << 0)
 
         self.__buffer.append(self.__controle)
@@ -66,12 +70,26 @@ class Quadro():
         if self.__tipoMsgArq == 0: # Este campo existe somente em quadros do Tipo DATA
             self.__buffer.append(self.__idProto)
         
-        self.__buffer += self.__data
+        self.__buffer += self.inserirEsc(self.__data)
 
         fcs = CRC16(self.__buffer)
         self.__buffer = fcs.gen_crc()
 
         return self.__buffer
+
+    def inserirEsc(self, data):
+        dados = bytearray()
+
+        for i in range(len(data)):
+            if data[i] == b'\x7E':
+                dados += b'\x7D'
+                dados += bytes([dados[i] ^ 0x02]) #xor
+            else:
+                if type(data[i]) == str:
+                    dados += str.encode(data[i])
+                else:
+                    dados.append(data[i])
+        return dados
 
     def getData(self):
         return self.__data

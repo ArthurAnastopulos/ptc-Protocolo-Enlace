@@ -1,19 +1,23 @@
 #!/usr/bin/python3
 
-from pypoller import poller
-from socket import *
 from serial import Serial
 from subcamada import Subcamada
 from quadro import Quadro
 from crc import CRC16
+import sys
+
 ## class Enquadramento(poller.Callback):
 class Enquadramento(Subcamada): 
 
     def __init__(self, port, tout):
-        print('__init__')
+        print("Enquadramento (__init__)")
         self.__port = port
         self.__tout = tout
-        self.__serial = Serial(self.__port, 9600, timeout=None )
+        try:
+            self.__serial = Serial(self.__port, 9600, timeout=None )
+        except:
+            print("Porta serial não foi encontrada. Encerrando Programa")
+            sys.exit(0)
         Subcamada.__init__(self, self.__serial, self.__tout)
         ##poller.Callback.__init__(self, self.__serial, self.__tout)
         self.__buffer = bytearray()
@@ -27,13 +31,13 @@ class Enquadramento(Subcamada):
 
       
     def ocioso(self, msg):
-        print("ocioso: ", msg)
+        print("Enquadramento (ocioso): ", msg)
         if(msg == b'\x7E'):
             ##self.enable_timeout()
             self.__state = self.prep
 
     def prep(self, msg):
-        print("prep:", msg)
+        print("Enquadramento (prep): ", msg)
         if(msg == b'\x7D'):
             self.__state = self.esc
         if(msg != b'\x7E'):
@@ -41,7 +45,7 @@ class Enquadramento(Subcamada):
             self.__state = self.rx
 
     def esc(self, msg):
-        print('esc:', msg)
+        print('Enquadramento (esc):', msg)
         if(msg == b'\x7E' or msg == b'\x7D'):
             self.__buffer.clear()
             self.__state = self.ocioso
@@ -51,7 +55,7 @@ class Enquadramento(Subcamada):
             self.__state = self.rx    
 
     def rx(self, msg):
-        print('rx:', msg)
+        print('Enquadramento (rx): ', msg)
         if(msg == b'\x7D'):
             self.__state = self.esc
         if(msg == b'\x7E'):
@@ -60,8 +64,8 @@ class Enquadramento(Subcamada):
             fcs = CRC16(self.__buffer)
             if fcs.check_crc():
                 quadro = self.deserializeBuffer(self.__buffer)
-                self.superior.recebe(quadro) #recebe da Subcamada, não do enquadramento (Talvez mudar de nome, para não gerar confusão?)
-                self.__buffer.clear()       
+                print("Quadro: ", quadro, "  buffer: ", self.__buffer)
+                self.superior.recebe(quadro) #recebe da Subcamada, não do enquadramento (Talvez mudar de nome, para não gerar confusão?)   
                 return True
             return False    
         else:
@@ -79,18 +83,23 @@ class Enquadramento(Subcamada):
         ##self.disable_timeout()
     
     def envia(self,quadro):
+        print("Enquadramento (envia)")
         dados = bytearray()
-        dados.append( b'\x7E' )
+        dados += b'\x7E'
         dados += quadro.serialize()
-        dados.appen( b'\x7E' )
+        dados += b'\x7E'
+        print("Enq Envia Dados: ", dados)
         self.__serial.write(dados) 
     
     def recebe(self):
+        print("Enquadramento (recebe)")
         recvMsg = self.__serial.read(1)
         if self.__state(recvMsg):
             print("Frame Msg: ", self.__buffer)
+            self.__buffer.clear()    
         
     def deserializeBuffer(self, buff: bytearray):
+        print("Enquadramento (deserializeBuffer)")
         tipoMsgArq = (buff[0] & (1 << 7) ) >> 7
         numSequencia = (buff[0] & (1 << 3) ) >> 3
         idProto = buff[2]
