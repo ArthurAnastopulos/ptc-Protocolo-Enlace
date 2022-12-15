@@ -19,6 +19,8 @@ O PPP é usado sobre muitos tipos de redes físicas incluindo cabo serial, linha
 
 Existem dois derivdados do PPP, o Point-to-Point Protocol over Ethernet (PPPoE), em português protocolo ponto a ponto sobre Ethernet, e Point-to-Point Protocol over ATM (PPPoA), em português Protocolo ponto a ponto sobre ATM, que são usados mais comumente por Provedores de Serviços de Internet para estabelecer uma conexão de serviços de Internet de Linha Digital de Assinante (ou DSL) com seus clientes.
 
+![](images/projeto-ppp.png)
+
 ## Objetivos
 
 Os objetivos deste repositorio foram desenvolver uma aplicação integrada ao protocolo implementado que possibilite o envio e recepção de mensagens via um terminal de texto. Mas que também possa ser utilizado em outras aplicações, assim se apresentando na forma de uma API. Podendo se comunicar biderecionalmente com a implementação de referência.
@@ -39,13 +41,17 @@ A classe subcamada auxilia na conexão das subcamadas mencionadas anteriormente,
 
 Este é responsável por delimitar o quadro, utilizando a técnica do tipo sentinela com uma flag de valor `7E` como delimitador do quadro, um byte de escape(esc) `7D` para o prenchimento da mensagem. O transmissor faz o escape dos bytes `7E` e `7D` modificando-os por meio de um XOR `20`
 
-(Adicionar MEF aqui)
+![](images/enq-mef.png)
 
 ### Arquitetura
 
-Este é conjunto de mecanismos que têm como finalidade garantir a entrega de mensagens, preservando a ordem do envio e buscando eficiência no uso do canal. Possibilitando que o transmissor se certifique de que uma mensagem foi entregue ou não ao destino. Enquanto uma mensagem não tiver sua entrega assegurada, ela permanece na fila de saída mantida no transmissor pelo protocolo.
+Este é conjunto de mecanismos que têm como finalidade garantir a entrega de mensagens, preservando a ordem do envio e buscando eficiência no uso do canal. Possibilitando que o transmissor se certifique de que uma mensagem foi entregue ou não ao destino. Enquanto uma mensagem não tiver sua entrega assegurada, ela permanece na fila de saída mantida no transmissor pelo protocolo. Estes mecanismos sã baseados em:
+- Dois tipos de mensagens: DATA e ACK
+- Mensagens de confirmação ACK sendo 0 ou 1.
+- Mensagens são numeradas de acordo com uma sequência
+- Retransmissão de mensagens perdidas ou recusadas
 
-(Adicionar MEF Aqui)
+![](images/arq-mef.png)
 
 ### Aplicação
 
@@ -53,20 +59,34 @@ Este é conjunto de mecanismos que têm como finalidade garantir a entrega de me
 
 ## Pré-requisitos
 
-Configurar serialemu
+Para executar o projeto basta seguir os passos abaixo:
+
+- Clone o repositório do projeto e acesse o diretório:
 
 ```bash
+$ git clone https://github.com/mmsobral-croom/projeto-2-um-protocolo-de-enlace-arthur-alana-jefferson
 ```
 
-instalar o pyserial
+- Instale o pyserial para rodar o projeto:
 
 ```bash
+$ pip3 install pyserial
 ```
 
 ## Instruções para Uso
 
+Agora pode rodar o projeto com uma das portas seriais dada pelo serialemu como parâmetro no terminal 1:
+
 ```bash
+$ python3 test.py [porta_serial_1]
 ```
+
+Agora pode rodar o projeto de teste implementado pelo professor com uma das portas seriais dada pelo serialemu como parâmetro no terminal 1:
+
+```bash
+$ python3 test.py [porta_serial_2] --noSession
+```
+
 ## Autores
 
 <a href="https://github.com/ArthurAnastopulos">
