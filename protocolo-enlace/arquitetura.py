@@ -4,6 +4,11 @@ from subcamada import Subcamada
 from quadro import Quadro
 
 class Arquitetura(Subcamada):
+
+    """ Metodo Construtor da Arquitetura
+
+    @param tout: timeout
+    """
     def __init__(self, tout):
         print("__init__ (Arquitetura)")
         self.__tout = tout
@@ -14,6 +19,10 @@ class Arquitetura(Subcamada):
         self.__quadro = None
         self.__filaMsg = Queue() # Fila de Mensagens
 
+    """ Metodo que recebe um quadro de uma subcamada 
+
+    @param quadro: Quadro recebido
+    """
     def recebe(self, quadro : Quadro):
         print("recebe (Arquitetura)")
         self.__quadro = quadro
@@ -27,6 +36,10 @@ class Arquitetura(Subcamada):
         if(quadro.getTipoMsgArq() == 0) :
             self.__sequenciaM = not self.__sequenciaM
 
+    """ Metodo que envia um quadro para uma subcamada 
+
+    @param quadro: Quadro enviado
+    """
     def envia(self, quadro : Quadro):
         print("envia (Arquitetura)")
         print("Estado da Arquitetura durante envio: ", self.__state)
@@ -44,6 +57,10 @@ class Arquitetura(Subcamada):
 
     # 0 - recebe (M)
     # 1 - transmite (_M)
+    """ Estado Ocioso da Arquitetura 
+
+    @param quadro: Quadro a ser tratado pela MEF
+    """
     def ocioso(self, quadro : Quadro):
         print("ocioso (Arquitetura)")
         self.disable_timeout()
@@ -68,7 +85,11 @@ class Arquitetura(Subcamada):
             self.inferior.envia(ack)
             self.__state = self.ocioso
 
+    """ Estado Espera da Arquitetura 
 
+    @param quadro: Quadro a ser tratado pela MEF
+    @param tout: timeout para ser utilizado no caso de retransmissão
+    """
     def espera(self, quadro :  Quadro, tout : bool = False):
         print("espera (Arquitetura)")
         if(not self.timeout_enabled):

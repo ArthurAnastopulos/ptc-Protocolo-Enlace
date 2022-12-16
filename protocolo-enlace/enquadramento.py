@@ -9,6 +9,11 @@ import sys
 ## class Enquadramento(poller.Callback):
 class Enquadramento(Subcamada): 
 
+    """ Construtor do Enquadramento 
+
+    @param port: Porta serial
+    @param tout: timeout
+    """
     def __init__(self, port, tout):
         print("Enquadramento (__init__)")
         self.__port = port
@@ -29,13 +34,21 @@ class Enquadramento(Subcamada):
         ##sched.adiciona(self)
         ##sched.despache()
 
-      
+    
+    """ Estado Ocioso do Enquadramento
+   
+    @param msg: Mensagem a ser tratada
+    """
     def ocioso(self, msg):
         print("Enquadramento (ocioso): ", msg)
         if(msg == b'\x7E'):
             ##self.enable_timeout()
             self.__state = self.prep
 
+    """ Estado Preparação do Enquadramento
+   
+    @param msg: Mensagem a ser tratada
+    """
     def prep(self, msg):
         print("Enquadramento (prep): ", msg)
         if(msg == b'\x7D'):
@@ -44,6 +57,10 @@ class Enquadramento(Subcamada):
             self.__buffer += msg
             self.__state = self.rx
 
+    """ Estado Escape do Enquadramento
+   
+    @param msg: Mensagem a ser tratada
+    """
     def esc(self, msg):
         print('Enquadramento (esc):', msg)
         if(msg == b'\x7E' or msg == b'\x7D'):
@@ -54,6 +71,10 @@ class Enquadramento(Subcamada):
             self.__buffer += bytes([msg[0] ^ 0x20])
             self.__state = self.rx    
 
+    """ Estado Recepção do Enquadramento
+   
+    @param msg: Mensagem a ser tratada
+    """
     def rx(self, msg):
         print('Enquadramento (rx): ', msg)
         if(msg == b'\x7D'):
@@ -82,6 +103,10 @@ class Enquadramento(Subcamada):
         self.__buffer.clear()
         ##self.disable_timeout()
     
+    """ Metodo que envia um quadrao para a porta serial
+   
+    @param quadro: quadro a ser enviado
+    """
     def envia(self,quadro):
         print("Enquadramento (envia)")
         dados = bytearray()
@@ -92,6 +117,9 @@ class Enquadramento(Subcamada):
         self.__serial.write(dados)
         self.__buffer.clear()
     
+    """ Metodo que recebe um caracter por vez da porta serial para ser tratado na maquina de estado
+   
+    """
     def recebe(self):
         print("Enquadramento (recebe)")
         recvMsg = self.__serial.read(1)
@@ -99,6 +127,11 @@ class Enquadramento(Subcamada):
             print("Frame Msg: ", self.__buffer)
             self.__buffer.clear()    
         
+    """ Metodo para deserializar um buffer e retornar um quadro
+   
+   @param buff: buffer
+   @return Quadro: Quadro a ser retornado
+    """
     def deserializeBuffer(self, buff: bytearray):
         print("Enquadramento (deserializeBuffer)")
         tipoMsgArq = (buff[0] & (1 << 7) ) >> 7

@@ -12,7 +12,11 @@ DATA = 1
 '''
 class Quadro():
 
-    def __init__(self, **kwargs): # keyword args para argumentos ce chave que formam o Quadro
+    """ Construtor do Quadro 
+
+    @kwargs: argumentos de chave que formam o Quadro
+    """
+    def __init__(self, **kwargs): # keyword args para argumentos de chave que formam o Quadro
         self.__controle = 0
         if kwargs is not None:
             if 'tipoMsgArq' in kwargs:
@@ -41,6 +45,10 @@ class Quadro():
     def deserialize(self, buffer: bytes):
         pass 
     
+    """ Serializa o quadro em um buffer 
+
+    @return buffer: retorna um buffer
+    """
     def serialize(self):
         self.__buffer = bytearray()
 
@@ -77,6 +85,11 @@ class Quadro():
 
         return self.__buffer
 
+    """ Inseri Escapes em um Quadro 
+
+    @params data: dados a serem modificados
+    @return dados: dados formatados com os escapes
+    """
     def inserirEsc(self, data):
         dados = bytearray()
 

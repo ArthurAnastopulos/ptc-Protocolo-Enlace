@@ -7,6 +7,11 @@ from arquitetura import Arquitetura
 import sys
 
 class Protocolo(Subcamada):
+    """ Construtor do Protocolo
+   
+    @param serial: porta serial
+    @param tout: timeout
+    """
     def __init__(self, serial, tout):
         print("Protocolo (__init__)")
         self.__serial = serial
@@ -25,6 +30,9 @@ class Protocolo(Subcamada):
         self.__sched.adiciona(self.__app)
         self.__sched.adiciona(self.__arq)
 
+    """ Metodo para iniciar e fazer o despache do protocolo
+   
+    """
     def iniciar(self):
         print("Protocolo (Despache)")
         self.__app.iniciar()

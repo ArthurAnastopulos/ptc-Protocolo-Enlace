@@ -2,6 +2,10 @@ from quadro import Quadro
 from pypoller import poller
 
 class Subcamada(poller.Callback):
+    """ Construtor da Subcamada 
+
+    @args: argumentos que cada subcamada envia para ser inicializado o seu Callback
+    """
     def __init__(self, * args): ## * args para conseguir enviar os diversos argumentos que serão usados pelo Callback/Handler nas diferentes partes do código
         poller.Callback.__init__(self, *args)
         self.inferior = None
