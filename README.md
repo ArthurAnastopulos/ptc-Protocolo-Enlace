@@ -61,13 +61,21 @@ Este é conjunto de mecanismos que têm como finalidade garantir a entrega de me
 
 Para executar o projeto basta seguir os passos abaixo:
 
-- Clone o repositório do projeto e acesse o diretório:
+- Clone o repositório do projeto e acesse o diretório que contém o codigo:
 
 ```bash
 $ git clone https://github.com/mmsobral-croom/projeto-2-um-protocolo-de-enlace-arthur-alana-jefferson
+
+$ cd protocolo-enlace
 ```
 
-- Instale o pyserial para rodar o projeto:
+- Obtenha o código-fonte do serialemu neste <a href="https://github.com/IFSCEngtelecomPTC/Serialemu">repositório</a> no github. Em seguida compile manualmente:
+
+```bash
+$ g++ -o serialemu *.cpp -lpthread -lutil -std=c++11
+```
+
+- Instale o pyserial, junto ao código fonte na pasta `protocolo-enlace` para rodar o projeto:
 
 ```bash
 $ pip3 install pyserial
@@ -75,16 +83,61 @@ $ pip3 install pyserial
 
 ## Instruções para Uso
 
-Agora pode rodar o projeto com uma das portas seriais dada pelo serialemu como parâmetro no terminal 1:
+Primeiramente é necessário ter duas portais seriais para que possa ser utilizado a biblioteca do PPP. Por isso será utilizado o serialemu para gerar um par de porta seriais como visto a seguir:
+
+```bash
+$ ./serialemu -h
+BER: taxa de erro de bit, que deve estar no intervalo  [0,1]
+atraso: atraso de propagação, em milissegundos.
+taxa_bits: taxa de bits em bits/segundo
+-f: executa em primeiro plano (nao faz fork)
+
+$ ./serialemu [-b BER][-a atraso][-f][-B taxa_bits]
+```
+
+Após executar de forma deseja o emulador de porta serias, anote os dois caminhos informados pelo serialemu: eles são as duas portas seriais que correspondem às pontas do link serial emulado. Então podera rodar o projeto com uma das portas seriais dada pelo serialemu como parâmetro no terminal 1:
 
 ```bash
 $ python3 test.py [porta_serial_1]
 ```
 
-Agora pode rodar o projeto de teste implementado pelo professor com uma das portas seriais dada pelo serialemu como parâmetro no terminal 1:
+O mesmo procedimento para a execução do projeto será feito em um segundo terminal, mas utilizando a outra porta do par de portas seriais obtidas pelo serialemu:
 
 ```bash
-$ python3 test.py [porta_serial_2] --noSession
+$ python3 test.py [porta_serial_2]
+```
+
+Caso deseje também há um binario de implementação de referencia ao protocolo, desenvolvido pelo professor da disciplima, para ser executado, caso dejese como um dos terminais envolivdos na comunicação (Obs: Neste caso deve se utilizar obrigatoriamente a flag de `--noSession`):
+
+```bash
+$ ./proto -h
+Uso: ./proto_noarq --serialPath /dev/XXX [opções] | -h
+
+Opções:
+ --debug: ativa debug em todas as subcamadas
+-h: mostra esta ajuda
+
+Opções relacionadas a Sessão:
+--idSession ID: define o número do id de sessão entre 0 e 255. default: 0
+--master: define como iniciador de sessao
+--noSession: desativa o controle de sessão
+--idError T: frequência de erros de id de sessão (1 a cada T mensagens com id sessão errado)
+--debugSession: ativa mensagdens de debug de sessão
+
+Opções relacionadas a ARQ:
+--noArq: desativa o ARQ
+--ackError T: frequência de erros de Ack (1 a cada T ACK recebidos são descartados)
+--dataError T: frequência de erros de DATA (1 a cada T DATA recebidos são descartados)
+--maxRetries N: limite de retransmissões do ARQ (default: 3)
+--ackTimeout T: timeout de espera por ACK no ARQ, em milissegundos (default: 1000)
+--debugArq: ativa mensagdens de debug de Arq
+
+Opções relacionadas a Enquadramento:
+--noFcs: desativa a detecção de erros
+--fcsError T: frequência de erros de FCS (1 a cada T quadros transmitidos com erro proposital)
+--flagError T: frequência de erros de Flag (1 a cada T flags omitidas propositalmente)
+--mtu N: valor da MTU (default: 1024)
+--debugEnq: ativa mensagens de debug de Enquadramento
 ```
 
 ## Autores
