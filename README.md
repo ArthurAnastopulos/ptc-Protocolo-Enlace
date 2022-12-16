@@ -45,7 +45,7 @@ Este é responsável por delimitar o quadro, utilizando a técnica do tipo senti
 
 ### Arquitetura
 
-Este é conjunto de mecanismos que têm como finalidade garantir a entrega de mensagens, preservando a ordem do envio e buscando eficiência no uso do canal. Possibilitando que o transmissor se certifique de que uma mensagem foi entregue ou não ao destino. Enquanto uma mensagem não tiver sua entrega assegurada, ela permanece na fila de saída mantida no transmissor pelo protocolo. Estes mecanismos sã baseados em:
+Este é conjunto de mecanismos que têm como finalidade garantir a entrega de mensagens, preservando a ordem do envio e buscando eficiência no uso do canal. Possibilitando que o transmissor se certifique de que uma mensagem foi entregue ou não ao destino. Enquanto uma mensagem não tiver sua entrega assegurada, ela permanece na fila de saída mantida no transmissor pelo protocolo. Estes mecanismos são baseados em:
 - Dois tipos de mensagens: DATA e ACK
 - Mensagens de confirmação ACK sendo 0 ou 1.
 - Mensagens são numeradas de acordo com uma sequência
@@ -55,8 +55,9 @@ Este é conjunto de mecanismos que têm como finalidade garantir a entrega de me
 
 ### Aplicação
 
+A aplicação é responsável por lê sequências de caracteres do terminal e passar o quadro  para a arquitetura. Bem como, receber os dados desencapsulados que são recebidos da arquitetura e apresenta-los no terminal.
 
-
+Foi desenvolvido dois métodos iniciar (start) e parar (stop) visando facilitar a execução/encerramento do projeto.
 ## Pré-requisitos
 
 Para executar o projeto basta seguir os passos abaixo:
