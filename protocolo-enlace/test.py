@@ -9,7 +9,7 @@ except:
   print('Uso: %s porta_serial' % sys.argv[0])
   sys.exit(0)
 
-timeout = 10
+timeout = 0.1
 
 proto = Protocolo(serial= porta, tout= timeout)
 

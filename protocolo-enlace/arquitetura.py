@@ -13,6 +13,7 @@ class Arquitetura(Subcamada):
         # print("__init__ (Arquitetura)")
         self.__tout = tout
         Subcamada.__init__(self, None, self.__tout)
+        self.enable()
         self.__countRetrans = 0
         self.__sequenciaM = 0
         self.__sequenciaN = 0
