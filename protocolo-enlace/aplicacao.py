@@ -17,7 +17,7 @@ class Aplicacao(Subcamada): #Adaptacao
     def recebe(self, data : Quadro):
         # print("recebe (Aplicacao)")
         #mostrar na tela os dados recebidos da subcamada
-        print("Recebido: ", data.getData())
+        print("[APP] Recebido: ", data.data)
 
 
     """ Metodo handle que dispara ao receber um input do terminal
@@ -30,8 +30,8 @@ class Aplicacao(Subcamada): #Adaptacao
             self.parar()
         #continuar handle aplicação
         self.__sequencia = not self.__sequencia
-        quadro = Quadro(tipoMsgArq = 0, numSequencia = self.__sequencia, data = dados)
-        print("Enviado: ", quadro.getData())
+        quadro = Quadro(tipoMsgArq = 0, numSequencia = self.__sequencia, data = dados.strip())
+        print("[APP] Enviado: ", quadro.data)
         self.inferior.envia(quadro)
 
 

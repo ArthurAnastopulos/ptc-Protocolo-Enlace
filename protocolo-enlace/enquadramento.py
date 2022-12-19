@@ -85,7 +85,7 @@ class Enquadramento(Subcamada):
             fcs = CRC16(self.__buffer)
             if fcs.check_crc():
                 quadro = self.deserializeBuffer(self.__buffer)
-                print("Quadro: ", quadro, "  buffer: ", self.__buffer)
+                # print("Quadro: ", quadro, "  buffer: ", self.__buffer)
                 self.superior.recebe(quadro) #recebe da Subcamada, não do enquadramento (Talvez mudar de nome, para não gerar confusão?)   
                 return True
             return False    
@@ -113,7 +113,7 @@ class Enquadramento(Subcamada):
         dados += b'\x7E'
         dados += quadro.serialize()
         dados += b'\x7E'
-        print("Enq Envia Dados: ", dados)
+        print("[Enq] Envia Dados: ", dados)
         self.__serial.write(dados)
         self.__buffer.clear()
     
@@ -123,8 +123,10 @@ class Enquadramento(Subcamada):
     def recebe(self):
         # print("Enquadramento (recebe)")
         recvMsg = self.__serial.read(1)
+        print("[ENQ] Recebeu dado da Porta Serial")
         if self.__state(recvMsg):
-            print("Frame Msg: ", self.__buffer)
+            # if(self.__buffer != b''):
+            print("[Enq] Frame Recebido: ", self.__buffer)
             self.__buffer.clear()    
         
     """ Metodo para deserializar um buffer e retornar um quadro
@@ -133,9 +135,13 @@ class Enquadramento(Subcamada):
    @return Quadro: Quadro a ser retornado
     """
     def deserializeBuffer(self, buff: bytearray):
-        # print("Enquadramento (deserializeBuffer)")
+        print("[ENQ] Motando Quadro")
         tipoMsgArq = (buff[0] & (1 << 7) ) >> 7
+        print("Tipo Msg: ", tipoMsgArq)
         numSequencia = (buff[0] & (1 << 3) ) >> 3
+        print("numSequencia: ", numSequencia)
         idProto = buff[2]
+        print("idProto: ", idProto)
         data = buff[3:len(buff)-2]
+        print("data: ", data)
         return Quadro(tipoMsgArq = tipoMsgArq, numSequencia = numSequencia, idProto = idProto, data = data)
