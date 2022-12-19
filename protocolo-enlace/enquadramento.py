@@ -15,7 +15,7 @@ class Enquadramento(Subcamada):
     @param tout: timeout
     """
     def __init__(self, port, tout):
-        print("Enquadramento (__init__)")
+        # print("Enquadramento (__init__)")
         self.__port = port
         self.__tout = tout
         try:
@@ -40,7 +40,7 @@ class Enquadramento(Subcamada):
     @param msg: Mensagem a ser tratada
     """
     def ocioso(self, msg):
-        print("Enquadramento (ocioso): ", msg)
+        # print("Enquadramento (ocioso): ", msg)
         if(msg == b'\x7E'):
             ##self.enable_timeout()
             self.__state = self.prep
@@ -50,7 +50,7 @@ class Enquadramento(Subcamada):
     @param msg: Mensagem a ser tratada
     """
     def prep(self, msg):
-        print("Enquadramento (prep): ", msg)
+        # print("Enquadramento (prep): ", msg)
         if(msg == b'\x7D'):
             self.__state = self.esc
         if(msg != b'\x7E'):
@@ -62,7 +62,7 @@ class Enquadramento(Subcamada):
     @param msg: Mensagem a ser tratada
     """
     def esc(self, msg):
-        print('Enquadramento (esc):', msg)
+        # print('Enquadramento (esc):', msg)
         if(msg == b'\x7E' or msg == b'\x7D'):
             self.__buffer.clear()
             self.__state = self.ocioso
@@ -76,7 +76,7 @@ class Enquadramento(Subcamada):
     @param msg: Mensagem a ser tratada
     """
     def rx(self, msg):
-        print('Enquadramento (rx): ', msg)
+        # print('Enquadramento (rx): ', msg)
         if(msg == b'\x7D'):
             self.__state = self.esc
         if(msg == b'\x7E'):
@@ -94,11 +94,11 @@ class Enquadramento(Subcamada):
         
 
     def handle(self):
-        print('handle(Enquadramento)')
+        # print('handle(Enquadramento)')
         self.recebe()
 
     def handle_timeout(self):
-        print('handle_timeout(Enquadramento)')
+        # print('handle_timeout(Enquadramento)')
         self.__state = self.ocioso
         self.__buffer.clear()
         ##self.disable_timeout()
@@ -108,7 +108,7 @@ class Enquadramento(Subcamada):
     @param quadro: quadro a ser enviado
     """
     def envia(self,quadro):
-        print("Enquadramento (envia)")
+        # print("Enquadramento (envia)")
         dados = bytearray()
         dados += b'\x7E'
         dados += quadro.serialize()
@@ -121,7 +121,7 @@ class Enquadramento(Subcamada):
    
     """
     def recebe(self):
-        print("Enquadramento (recebe)")
+        # print("Enquadramento (recebe)")
         recvMsg = self.__serial.read(1)
         if self.__state(recvMsg):
             print("Frame Msg: ", self.__buffer)
@@ -133,7 +133,7 @@ class Enquadramento(Subcamada):
    @return Quadro: Quadro a ser retornado
     """
     def deserializeBuffer(self, buff: bytearray):
-        print("Enquadramento (deserializeBuffer)")
+        # print("Enquadramento (deserializeBuffer)")
         tipoMsgArq = (buff[0] & (1 << 7) ) >> 7
         numSequencia = (buff[0] & (1 << 3) ) >> 3
         idProto = buff[2]

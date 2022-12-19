@@ -10,7 +10,7 @@ class Arquitetura(Subcamada):
     @param tout: timeout
     """
     def __init__(self, tout):
-        print("__init__ (Arquitetura)")
+        # print("__init__ (Arquitetura)")
         self.__tout = tout
         Subcamada.__init__(self, None, self.__tout)
         self.__sequenciaM = 0
@@ -24,7 +24,7 @@ class Arquitetura(Subcamada):
     @param quadro: Quadro recebido
     """
     def recebe(self, quadro : Quadro):
-        print("recebe (Arquitetura)")
+        # print("recebe (Arquitetura)")
         self.__quadro = quadro
         print("RECEBE timeout habilitado ? : ",self.timeout_enabled)
         print("Data do Quadro: ", self.__quadro.getData())
@@ -41,14 +41,13 @@ class Arquitetura(Subcamada):
     @param quadro: Quadro enviado
     """
     def envia(self, quadro : Quadro):
-        print("envia (Arquitetura)")
+        # print("envia (Arquitetura)")
         print("Estado da Arquitetura durante envio: ", self.__state)
         print("ENVIA timeout habilitado ? : ",self.timeout_enabled)
         self.__quadro = quadro
         self.__filaMsg.put(self.__quadro)
 
         if self.__state == self.ocioso:
-            print("Arquitetura envia ocioso")
             if self.__filaMsg.qsize() > 1:
                 self.inferior.envia(self.__filaMsg.get()) # !dataN da Modelagem da MEF
                 self.__sequenciaN = not self.__sequenciaN
@@ -62,7 +61,7 @@ class Arquitetura(Subcamada):
     @param quadro: Quadro a ser tratado pela MEF
     """
     def ocioso(self, quadro : Quadro):
-        print("ocioso (Arquitetura)")
+        # print("ocioso (Arquitetura)")
         self.disable_timeout()
         if (quadro.getTipoMsgArq == 0) and (quadro.getNumSequencia == self.__sequenciaM):
             print("--- Data M Recebido ---")
@@ -91,9 +90,8 @@ class Arquitetura(Subcamada):
     @param tout: timeout para ser utilizado no caso de retransmissão
     """
     def espera(self, quadro :  Quadro, tout : bool = False):
-        print("espera (Arquitetura)")
+        # print("espera (Arquitetura)")
         if(not self.timeout_enabled):
-            print("Caso não tenho")
             self.reload_timeout()
             self.enable_timeout()
 
@@ -129,10 +127,9 @@ class Arquitetura(Subcamada):
             self.inferior.envia(self.__quadro)
 
     def handle(self):
-        print("handle (Arquitetura)")
         pass
 
     def handle_timeout(self):
-        print("handle_timeout (Arquitetura)")
+        # print("handle_timeout (Arquitetura)")
         if self.__state == self.espera:
             self.__state(self.__quadro, True)

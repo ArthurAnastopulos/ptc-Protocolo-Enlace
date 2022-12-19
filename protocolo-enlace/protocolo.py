@@ -13,7 +13,7 @@ class Protocolo(Subcamada):
     @param tout: timeout
     """
     def __init__(self, serial, tout):
-        print("Protocolo (__init__)")
+        # print("Protocolo (__init__)")
         self.__serial = serial
         self.__tout = tout
         self.__enq = Enquadramento(port=self.__serial, tout=self.__tout)
@@ -34,7 +34,6 @@ class Protocolo(Subcamada):
    
     """
     def iniciar(self):
-        print("Protocolo (Despache)")
-        self.__app.iniciar()
+        # print("Protocolo (Despache)")
         self.__sched.despache()
         

@@ -6,7 +6,7 @@ class Aplicacao(Subcamada): #Adaptacao
 
     """
     def __init__(self):
-        print("__init__ (Apliacacao)")
+        # print("__init__ (Apliacacao)")
         Subcamada.__init__(self, sys.stdin)
         self.__sequencia = 0
 
@@ -15,7 +15,7 @@ class Aplicacao(Subcamada): #Adaptacao
     @param data: Quadro recebido
     """
     def recebe(self, data : Quadro):
-        print("recebe (Aplicacao)")
+        # print("recebe (Aplicacao)")
         #mostrar na tela os dados recebidos da subcamada
         print("Recebido: ", data.getData())
 
@@ -24,9 +24,9 @@ class Aplicacao(Subcamada): #Adaptacao
 
     """
     def handle(self):
-        print("handle (Aplicacao)")
+        # print("handle (Aplicacao)")
         dados = sys.stdin.readline()
-        if dados.strip() == "stop":
+        if dados.strip() == "##stop":
             self.parar()
         #continuar handle aplicação
         self.__sequencia = not self.__sequencia
@@ -35,20 +35,11 @@ class Aplicacao(Subcamada): #Adaptacao
         self.inferior.envia(quadro)
 
 
-    """ Metodo desenvolvido para ser utilizado internamente como um flag de start para interface da API do Protocolo
-
-    """
-    def iniciar(self):
-        print("iniciar (Aplicacao)")
-        inicio = Quadro(numSequencia = self.__sequencia, data = "start")
-        self.inferior.envia(inicio)
-
-
     """ Metodo desenvolvido para ser utilizado internamente como uma flag de stop, assim o usuario pode encerra a aplicação quando desejar 
 
     """
     def parar(self):
-        print("parar (Aplicacao) - Encerrando Aplicação")
+        # print("parar (Aplicacao) - Encerrando Aplicação")
         # stop = Quadro(numSequencia = 0, data = "stop")
         # self.inferior.envia(stop)
         sys.exit()
