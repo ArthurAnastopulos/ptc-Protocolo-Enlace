@@ -143,5 +143,6 @@ class Enquadramento(Subcamada):
         idProto = buff[2]
         print("idProto: ", idProto)
         data = buff[3:len(buff)-2]
-        print("data: ", data)
+        if tipoMsgArq != 1:
+            print("data: ", data)
         return Quadro(tipoMsgArq = tipoMsgArq, numSequencia = numSequencia, idProto = idProto, data = data)

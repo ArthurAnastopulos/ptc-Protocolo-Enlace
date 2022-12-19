@@ -8,7 +8,6 @@ class Aplicacao(Subcamada): #Adaptacao
     def __init__(self):
         # print("__init__ (Apliacacao)")
         Subcamada.__init__(self, sys.stdin)
-        self.__sequencia = 0
 
     """ Metodo que recebe um quadro na Aplicação de uma subcamada
 
@@ -29,8 +28,7 @@ class Aplicacao(Subcamada): #Adaptacao
         if dados.strip() == "##stop":
             self.parar()
         #continuar handle aplicação
-        self.__sequencia = not self.__sequencia
-        quadro = Quadro(tipoMsgArq = 0, numSequencia = self.__sequencia, data = dados.strip())
+        quadro = Quadro(data = dados.strip())
         print("[APP] Enviado: ", quadro.data)
         self.inferior.envia(quadro)
 

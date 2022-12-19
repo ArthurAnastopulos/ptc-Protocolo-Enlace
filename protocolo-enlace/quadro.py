@@ -23,14 +23,14 @@ class Quadro():
                 self.tipoMsgArq = kwargs['tipoMsgArq']
             else:
                 self.tipoMsgArq = 0
-            if 'tipoQuadro' in kwargs:
-                self.tipoQuadro = kwargs['tipoQuadro']
-            else:
-               self.tipoQuadro = 0
+            # if 'tipoQuadro' in kwargs:
+            #     self.tipoQuadro = kwargs['tipoQuadro']
+            # else:
+            #    self.tipoQuadro = 0
             if 'numSequencia' in kwargs:
                 self.numSequencia = kwargs['numSequencia']
             else:
-                raise Exception("Está faltando o bit do número de Sequencia")
+                self.numSequencia = 0
             if 'idProto' in kwargs:
                 self.idProto = kwargs['idProto']
             else:
@@ -55,22 +55,6 @@ class Quadro():
         # Verificar os 7 bits do Controle, colocando os valores definidos
         self.controle |= ( self.tipoMsgArq << 7 )
         self.controle |= ( self.numSequencia << 3 )
-
-        if self.tipoQuadro == 0:
-            self.controle |= (0 << 1)
-            self.controle |= (0 << 0)
-
-        if self.tipoQuadro == 1:
-            self.controle |= (0 << 1)
-            self.controle |= (1 << 0)
-        
-        if self.tipoQuadro == 2:
-            self.controle |= (1 << 1)
-            self.controle |= (0 << 0)
-
-        if self.tipoQuadro == 3:
-            self.controle |= (1 << 1)
-            self.controle |= (1 << 0)
 
         self.buffer.append(self.controle)
         self.buffer.append(0) #Reservado
